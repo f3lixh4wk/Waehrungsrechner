@@ -21,18 +21,25 @@
     UIView* rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [rootView setBackgroundColor:[UIColor whiteColor]];
     
-    UIButton* backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 60, 100, 35)];
+    UIButton* backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 60, 100, 50)];
     [backButton setImage:[UIImage systemImageNamed:@"arrow.backward"] forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(zurueckHandler:) forControlEvents:UIControlEventTouchUpInside];
+    [backButton setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
     [rootView addSubview:backButton];
     
-    UILabel* settingsLabel = [[UILabel alloc] initWithFrame:CGRectMake(145, 60, 200, 30)];
+    UILabel* settingsLabel = [[UILabel alloc] initWithFrame:CGRectMake(145, 60, 200, 50)];
     [settingsLabel setText:@"Einstellungen"];
+    [settingsLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
     [rootView addSubview:settingsLabel];
     
     UILabel* decimalLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 150, 200, 30)];
     [decimalLabel setText:@"Nachkommastellen"];
+    [decimalLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
+    decimalLabel.textAlignment = NSTextAlignmentCenter;
     [rootView addSubview:decimalLabel];
     
     _isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUp"];
@@ -44,11 +51,15 @@
     _labelValue = [[UILabel alloc] initWithFrame:CGRectMake(200, 150, 50, 30)];
     _labelValue.textAlignment = NSTextAlignmentCenter;
     [_labelValue setBackgroundColor:[UIColor lightGrayColor]];
+    [_labelValue setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
     _labelValue.text = [NSString stringWithFormat:@"%ld", (long)_decimalPlaces];
     [rootView addSubview:_labelValue];
     
     UIStepper* stepper = [[UIStepper alloc] initWithFrame:CGRectMake(250, 150, 60, 30)];
     [stepper addTarget:self action:@selector(stepperChanged:) forControlEvents:UIControlEventValueChanged];
+    [stepper setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
     
     [stepper setValue:_decimalPlaces];
     [stepper setMinimumValue:0];
@@ -74,11 +85,6 @@
     int value = sender.value;
     _labelValue.text = [NSString stringWithFormat:@"%d",value];
     _decimalPlaces = value;
-}
-
-- (BOOL) shouldAutorotate
-{
-    return YES;
 }
 
 
