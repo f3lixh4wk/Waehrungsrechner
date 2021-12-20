@@ -17,13 +17,12 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
+    // Idee für Animation: Wenn der SwitchCountryButton gedrückt wird, dann wird das Switchen animiert.
 }
 
 -(void) loadControllerWithEntities:(NSMutableArray *)entities
 {
     currencyEntities = entities;
-    
 }
 
 -(IBAction)btnCountryLeftHandler:(id)sender

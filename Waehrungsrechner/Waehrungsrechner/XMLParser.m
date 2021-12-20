@@ -74,7 +74,7 @@
         NSNumber* number = [numberFormatter numberFromString:currentElement];
         currency.kurswert = [number doubleValue];
     }
-    else if([elementName isEqualToString:@"iso3"])
+    else if([elementName isEqualToString:@"iso2"])
         currency.laenderCode = [currentElement stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     else if([elementName isEqualToString:@"startdatum"])
         currency.startDatum = [dateFormatter dateFromString:currentElement];
