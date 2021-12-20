@@ -6,6 +6,7 @@
 //
 
 #import "InitialViewController.h"
+#import "MainViewController.h"
 #import "XMLParser.h"
 
 @interface InitialViewController ()
@@ -76,28 +77,27 @@
 -(void)readXML
 {
     XMLParser* parser = [[XMLParser alloc]initXMLParserWithPath:path];
-    NSMutableArray* entities = parser.currencyEntities;
+    entities = parser.currencyEntities;
     [self loadMainViewControllerWithEntities:entities];
+}
+
+-(void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    if([segue.identifier isEqualToString:@"loadMainViewController"])
+    {
+        MainViewController* controller = (MainViewController*)segue.destinationViewController;
+        [controller loadControllerWithEntities:entities];
+    }
 }
 
 -(void)loadMainViewControllerWithEntities:(NSMutableArray*)entities
 {
-    [self performSegueWithIdentifier:@"loadMainViewController" sender:self];
+    [self performSegueWithIdentifier:@"loadMainViewController" sender:self]; // calls prepareForSegue
 }
 
 - (BOOL) shouldAutorotate
 {
     return YES;
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

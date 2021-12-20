@@ -20,6 +20,12 @@
 
 }
 
+-(void) loadControllerWithEntities:(NSMutableArray *)entities
+{
+    currencyEntities = entities;
+    
+}
+
 -(IBAction)btnCountryLeftHandler:(id)sender
 {
     

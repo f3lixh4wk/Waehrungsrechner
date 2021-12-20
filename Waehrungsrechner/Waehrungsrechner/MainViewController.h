@@ -18,7 +18,11 @@ NS_ASSUME_NONNULL_BEGIN
     IBOutlet UILabel *_lblResult;
     IBOutlet UIButton *_btnCountryRight;
     IBOutlet UIButton *_btnCountryLeft;
+    NSMutableArray* currencyEntities;
 }
+
+-(void) loadControllerWithEntities:(NSMutableArray*)entities;
+
 @end
 
 NS_ASSUME_NONNULL_END

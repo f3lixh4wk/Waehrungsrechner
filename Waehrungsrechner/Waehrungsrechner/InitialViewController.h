@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSString* path;
     NSURLSession* session;
+    NSMutableArray* entities;
     IBOutlet UILabel* lblDownloadStatus;
 }
 
