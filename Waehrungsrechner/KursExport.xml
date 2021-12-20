@@ -81,44 +81,44 @@
     <enddatum>30.11.2021</enddatum>
 </kurs>
 <kurs id="242515">
-<land>Kroatien</land>
-<iso2>HR</iso2>
-<kurswert>7,5092</kurswert>
-<iso3>HRK</iso3>
-<startdatum>01.11.2021</startdatum>
-<enddatum>30.11.2021</enddatum>
+    <land>Kroatien</land>
+    <iso2>HR</iso2>
+    <kurswert>7,5092</kurswert>
+    <iso3>HRK</iso3>
+    <startdatum>01.11.2021</startdatum>
+    <enddatum>30.11.2021</enddatum>
 </kurs>
 <kurs id="242516">
-<land>Ungarn</land>
-<iso2>HU</iso2>
-<kurswert>361,59</kurswert>
-<iso3>HUF</iso3>
-<startdatum>01.11.2021</startdatum>
-<enddatum>30.11.2021</enddatum>
+    <land>Ungarn</land>
+    <iso2>HU</iso2>
+    <kurswert>361,59</kurswert>
+    <iso3>HUF</iso3>
+    <startdatum>01.11.2021</startdatum>
+    <enddatum>30.11.2021</enddatum>
 </kurs>
 <kurs id="242517">
-<land>Indonesien</land>
-<iso2>ID</iso2>
-<kurswert>16404,06</kurswert>
-<iso3>IDR</iso3>
-<startdatum>01.11.2021</startdatum>
-<enddatum>30.11.2021</enddatum>
+    <land>Indonesien</land>
+    <iso2>ID</iso2>
+    <kurswert>16404,06</kurswert>
+    <iso3>IDR</iso3>
+    <startdatum>01.11.2021</startdatum>
+    <enddatum>30.11.2021</enddatum>
 </kurs>
 <kurs id="242518">
-<land>Israel</land>
-<iso2>IL</iso2>
-<kurswert>3,7357</kurswert>
-<iso3>ILS</iso3>
-<startdatum>01.11.2021</startdatum>
-<enddatum>30.11.2021</enddatum>
+    <land>Israel</land>
+    <iso2>IL</iso2>
+    <kurswert>3,7357</kurswert>
+    <iso3>ILS</iso3>
+    <startdatum>01.11.2021</startdatum>
+    <enddatum>30.11.2021</enddatum>
 </kurs>
 <kurs id="242519">
-<land>Indien</land>
-<iso2>IN</iso2>
-<kurswert>87,0086</kurswert>
-<iso3>INR</iso3>
-<startdatum>01.11.2021</startdatum>
-<enddatum>30.11.2021</enddatum>
+    <land>Indien</land>
+    <iso2>IN</iso2>
+    <kurswert>87,0086</kurswert>
+    <iso3>INR</iso3>
+    <startdatum>01.11.2021</startdatum>
+    <enddatum>30.11.2021</enddatum>
 </kurs>
 <kurs id="242520">
 <land>Island</land>
