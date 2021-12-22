@@ -32,8 +32,9 @@
     tableViewRight.hidden = YES;
     tableViewRight.scrollEnabled = YES;
     
-    bottomBorderLblValueToCalculate = [self createBottomBorderForLabel:lblValueToCalculate];
-    [lblValueToCalculate.layer addSublayer:bottomBorderLblValueToCalculate];
+    tfValueToCalculate.keyboardType = UIKeyboardTypeNumberPad;
+    bottomBorderTfValueToCalculate = [self createBottomBorderForTextField:tfValueToCalculate];
+    [tfValueToCalculate.layer addSublayer:bottomBorderTfValueToCalculate];
     
     bottomBorderLblResult = [self createBottomBorderForLabel:lblResult];
     [lblResult.layer addSublayer:bottomBorderLblResult];
@@ -63,12 +64,14 @@
 {
     tableViewLeft.hidden = tableViewLeft.hidden ? NO : YES;
     tableViewRight.hidden = YES;
+    [tfValueToCalculate resignFirstResponder];
 }
 
 -(IBAction)btnCountryRightHandler:(id)sender
 {
     tableViewRight.hidden = tableViewRight.hidden ? NO : YES;
     tableViewLeft.hidden = YES;
+    [tfValueToCalculate resignFirstResponder];
 }
 
 -(IBAction)btnSwitchCountriesHandler:(id)sender
@@ -82,6 +85,8 @@
     [btnCountryLeft setImage:countryImageRight forState:UIControlStateNormal];
     [btnCountryRight setTitle:btnTitleLeft forState:UIControlStateNormal];
     [btnCountryRight setImage:countryImageLeft forState:UIControlStateNormal];
+    
+    [tfValueToCalculate resignFirstResponder];
 }
 
 - (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces
@@ -106,9 +111,9 @@
     completion:^(id  _Nonnull context)
     {
         // will execute after rotation
-        [self->bottomBorderLblValueToCalculate removeFromSuperlayer];
-        self->bottomBorderLblValueToCalculate = [self createBottomBorderForLabel:self->lblValueToCalculate];
-        [self->lblValueToCalculate.layer addSublayer:self->bottomBorderLblValueToCalculate];
+        [self->bottomBorderTfValueToCalculate removeFromSuperlayer];
+        self->bottomBorderTfValueToCalculate = [self createBottomBorderForTextField:self->tfValueToCalculate];
+        [self->tfValueToCalculate.layer addSublayer:self->bottomBorderTfValueToCalculate];
         
         [self->bottomBorderLblResult removeFromSuperlayer];
         self->bottomBorderLblResult = [self createBottomBorderForLabel:self->lblResult];
@@ -122,6 +127,15 @@
     bottomBorder.borderColor = [UIColor blackColor].CGColor;
     bottomBorder.borderWidth = 1;
     bottomBorder.frame = CGRectMake(0, CGRectGetHeight(label.frame)-1, CGRectGetWidth(label.frame), 1);
+    return bottomBorder;
+}
+
+-(CALayer*)createBottomBorderForTextField:(UITextField*)textfield
+{
+    CALayer* bottomBorder = [CALayer layer];
+    bottomBorder.borderColor = [UIColor blackColor].CGColor;
+    bottomBorder.borderWidth = 1;
+    bottomBorder.frame = CGRectMake(0, CGRectGetHeight(textfield.frame)-1, CGRectGetWidth(textfield.frame), 1);
     return bottomBorder;
 }
 
@@ -181,11 +195,26 @@
     NSString* countryName = [tableViewCountryData objectAtIndex:indexPath.row];
     NSString* countryCode = [tableViewCountryCodeData objectAtIndex:indexPath.row];
     UIImage *countryImage = [UIImage imageNamed:countryCode];
-    UIFont *labelFont = [ UIFont fontWithName: @"Arial" size: 16.0 ];
+    UIFont *labelFont = [ UIFont fontWithName: @"System" size: 16.0 ];
     
     [button setTitle:[NSString stringWithFormat:@"   %@ (%@)", countryName, countryCode] forState:UIControlStateNormal];
     [button.titleLabel setFont:labelFont];
     [button setImage:countryImage forState:UIControlStateNormal];
+}
+
+-(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+    [textField becomeFirstResponder];
+    return YES;
+}
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *) event
+{
+    UITouch *touch = [[event allTouches] anyObject];
+    if ([tfValueToCalculate isFirstResponder] && (tfValueToCalculate != touch.view))
+    {
+        [tfValueToCalculate resignFirstResponder];
+    }
 }
 
 /*

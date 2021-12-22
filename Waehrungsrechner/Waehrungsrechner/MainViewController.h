@@ -10,11 +10,11 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MainViewController : UIViewController <MenueViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface MainViewController : UIViewController <MenueViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 {
     double _valueToCalculate;
     NSInteger decimalPlaces;
-    IBOutlet UILabel *lblValueToCalculate;
+    IBOutlet UITextField *tfValueToCalculate;
     IBOutlet UILabel *lblResult;
     IBOutlet UIButton *btnCountryRight;
     IBOutlet UIButton *btnCountryLeft;
@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableArray* tableViewCountryCodeData;
     NSMutableArray* currencyEntities;
     
-    CALayer* bottomBorderLblValueToCalculate;
+    CALayer* bottomBorderTfValueToCalculate;
     CALayer* bottomBorderLblResult;
 }
 
