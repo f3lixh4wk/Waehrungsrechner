@@ -31,6 +31,12 @@
     tableViewRight.dataSource = self;
     tableViewRight.hidden = YES;
     tableViewRight.scrollEnabled = YES;
+    
+    bottomBorderLblValueToCalculate = [self createBottomBorderForLabel:lblValueToCalculate];
+    [lblValueToCalculate.layer addSublayer:bottomBorderLblValueToCalculate];
+    
+    bottomBorderLblResult = [self createBottomBorderForLabel:lblResult];
+    [lblResult.layer addSublayer:bottomBorderLblResult];
 }
 
 -(void) loadControllerWithEntities:(NSMutableArray *)entities
@@ -67,12 +73,20 @@
 
 -(IBAction)btnSwitchCountriesHandler:(id)sender
 {
+    NSString* btnTitleLeft = btnCountryLeft.currentTitle;
+    UIImage* countryImageLeft = btnCountryLeft.currentImage;
+    NSString* btnTitleRight = btnCountryRight.currentTitle;
+    UIImage* countryImageRight = btnCountryRight.currentImage;
     
+    [btnCountryLeft setTitle:btnTitleRight forState:UIControlStateNormal];
+    [btnCountryLeft setImage:countryImageRight forState:UIControlStateNormal];
+    [btnCountryRight setTitle:btnTitleLeft forState:UIControlStateNormal];
+    [btnCountryRight setImage:countryImageLeft forState:UIControlStateNormal];
 }
 
-- (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)decimalPlaces
+- (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces
 {
-    _decimalPlaces = decimalPlaces;
+    decimalPlaces = _decimalPlaces;
 }
 
 -(IBAction)menuHandler:(id)sender
@@ -81,6 +95,34 @@
     menue.delegate = self;
     menue.modalPresentationStyle = UIModalPresentationFullScreen;
     [self presentViewController:menue animated:YES completion:nil];
+}
+
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator
+{
+    [coordinator animateAlongsideTransition:^(id  _Nonnull context)
+    {
+        // will execute during rotation
+    }
+    completion:^(id  _Nonnull context)
+    {
+        // will execute after rotation
+        [self->bottomBorderLblValueToCalculate removeFromSuperlayer];
+        self->bottomBorderLblValueToCalculate = [self createBottomBorderForLabel:self->lblValueToCalculate];
+        [self->lblValueToCalculate.layer addSublayer:self->bottomBorderLblValueToCalculate];
+        
+        [self->bottomBorderLblResult removeFromSuperlayer];
+        self->bottomBorderLblResult = [self createBottomBorderForLabel:self->lblResult];
+        [self->lblResult.layer addSublayer:self->bottomBorderLblResult];
+    }];
+}
+
+-(CALayer*)createBottomBorderForLabel:(UILabel*)label
+{
+    CALayer* bottomBorder = [CALayer layer];
+    bottomBorder.borderColor = [UIColor blackColor].CGColor;
+    bottomBorder.borderWidth = 1;
+    bottomBorder.frame = CGRectMake(0, CGRectGetHeight(label.frame)-1, CGRectGetWidth(label.frame), 1);
+    return bottomBorder;
 }
 
 - (BOOL) shouldAutorotate
@@ -112,7 +154,7 @@
     NSString* countryName = [tableViewCountryData objectAtIndex:indexPath.row];
     NSString* countryCode = [tableViewCountryCodeData objectAtIndex:indexPath.row];
     UIImageView *countryImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:countryCode]];
-    UIFont *labelFont = [ UIFont fontWithName: @"Arial" size: 14.0 ];
+    UIFont *labelFont = [ UIFont fontWithName: @"Arial" size: 16.0 ];
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@ (%@)", countryName, countryCode];
     cell.textLabel.font  = labelFont;
@@ -124,12 +166,12 @@
 {
     if(tableView == tableViewLeft)
     {
-        [self setButtonContentWithIndexPath:indexPath andButton:_btnCountryLeft];
+        [self setButtonContentWithIndexPath:indexPath andButton:btnCountryLeft];
         tableViewLeft.hidden = YES;
     }
     else if (tableView == tableViewRight)
     {
-        [self setButtonContentWithIndexPath:indexPath andButton:_btnCountryRight];
+        [self setButtonContentWithIndexPath:indexPath andButton:btnCountryRight];
         tableViewRight.hidden = YES;
     }
 }
@@ -139,7 +181,7 @@
     NSString* countryName = [tableViewCountryData objectAtIndex:indexPath.row];
     NSString* countryCode = [tableViewCountryCodeData objectAtIndex:indexPath.row];
     UIImage *countryImage = [UIImage imageNamed:countryCode];
-    UIFont *labelFont = [ UIFont fontWithName: @"Arial" size: 14.0 ];
+    UIFont *labelFont = [ UIFont fontWithName: @"Arial" size: 16.0 ];
     
     [button setTitle:[NSString stringWithFormat:@"   %@ (%@)", countryName, countryCode] forState:UIControlStateNormal];
     [button.titleLabel setFont:labelFont];

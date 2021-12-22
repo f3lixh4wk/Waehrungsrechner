@@ -13,16 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 @interface MainViewController : UIViewController <MenueViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     double _valueToCalculate;
-    NSInteger _decimalPlaces;
-    IBOutlet UILabel *_lblValueToCalculate;
-    IBOutlet UILabel *_lblResult;
-    IBOutlet UIButton *_btnCountryRight;
-    IBOutlet UIButton *_btnCountryLeft;
+    NSInteger decimalPlaces;
+    IBOutlet UILabel *lblValueToCalculate;
+    IBOutlet UILabel *lblResult;
+    IBOutlet UIButton *btnCountryRight;
+    IBOutlet UIButton *btnCountryLeft;
     IBOutlet UITableView *tableViewLeft;
     IBOutlet UITableView *tableViewRight;
     NSMutableArray* tableViewCountryData;
     NSMutableArray* tableViewCountryCodeData;
     NSMutableArray* currencyEntities;
+    
+    CALayer* bottomBorderLblValueToCalculate;
+    CALayer* bottomBorderLblResult;
 }
 
 -(void) loadControllerWithEntities:(NSMutableArray*)entities;
