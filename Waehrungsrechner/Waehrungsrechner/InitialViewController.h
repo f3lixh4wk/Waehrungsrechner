@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSURLSession* session;
     NSMutableArray* entities;
     IBOutlet UILabel* lblDownloadStatus;
+    IBOutlet UIActivityIndicatorView *activityIndicator;
 }
 
 @property (strong, nonatomic) NSString* path;

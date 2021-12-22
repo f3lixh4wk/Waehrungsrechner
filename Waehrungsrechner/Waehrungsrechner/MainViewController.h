@@ -10,7 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface MainViewController : UIViewController <MenueViewControllerDelegate>
+@interface MainViewController : UIViewController <MenueViewControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 {
     double _valueToCalculate;
     NSInteger _decimalPlaces;
@@ -18,6 +18,10 @@ NS_ASSUME_NONNULL_BEGIN
     IBOutlet UILabel *_lblResult;
     IBOutlet UIButton *_btnCountryRight;
     IBOutlet UIButton *_btnCountryLeft;
+    IBOutlet UITableView *tableViewLeft;
+    IBOutlet UITableView *tableViewRight;
+    NSMutableArray* tableViewCountryData;
+    NSMutableArray* tableViewCountryCodeData;
     NSMutableArray* currencyEntities;
 }
 

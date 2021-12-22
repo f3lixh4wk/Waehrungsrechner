@@ -21,7 +21,7 @@
     UIView* rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [rootView setBackgroundColor:[UIColor whiteColor]];
     
-    UIButton* backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 60, 100, 50)];
+    UIButton* backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 30, 100, 50)];
     [backButton setImage:[UIImage systemImageNamed:@"arrow.backward"] forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(zurueckHandler:) forControlEvents:UIControlEventTouchUpInside];
@@ -29,7 +29,7 @@
      UIViewAutoresizingFlexibleLeftMargin];
     [rootView addSubview:backButton];
     
-    UILabel* settingsLabel = [[UILabel alloc] initWithFrame:CGRectMake(145, 60, 200, 50)];
+    UILabel* settingsLabel = [[UILabel alloc] initWithFrame:CGRectMake(140, 30, 200, 50)];
     [settingsLabel setText:@"Einstellungen"];
     [settingsLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
      UIViewAutoresizingFlexibleLeftMargin];

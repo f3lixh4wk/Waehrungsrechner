@@ -49,6 +49,7 @@
     session = [NSURLSession sessionWithConfiguration:config delegate:self delegateQueue:[NSOperationQueue mainQueue]];
     NSString* downloadURL = [self getURLWithCurrentDate];
     NSURLSessionDownloadTask* task = [session downloadTaskWithURL:[NSURL URLWithString:downloadURL]];
+    [activityIndicator startAnimating];
     
     [task resume];
 }
@@ -61,6 +62,7 @@
     NSString* directoryPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     path = [NSString stringWithFormat:@"%@/KursExport.xml", directoryPath];
     [fileManager moveItemAtURL:location toURL:[NSURL fileURLWithPath:path] error:nil];
+    [activityIndicator stopAnimating];
     
     [self readXML];
 }
