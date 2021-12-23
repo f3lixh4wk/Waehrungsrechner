@@ -32,12 +32,20 @@
     tableViewRight.hidden = YES;
     tableViewRight.scrollEnabled = YES;
     
+    tfValueToCalculate.delegate = self;
     tfValueToCalculate.keyboardType = UIKeyboardTypeNumberPad;
     bottomBorderTfValueToCalculate = [self createBottomBorderForTextField:tfValueToCalculate];
     [tfValueToCalculate.layer addSublayer:bottomBorderTfValueToCalculate];
+    tfValueToCalculate.textAlignment = NSTextAlignmentCenter;
     
     bottomBorderLblResult = [self createBottomBorderForLabel:lblResult];
     [lblResult.layer addSublayer:bottomBorderLblResult];
+    
+    isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUpMain"];
+    if (isNotFirstStartup == true)
+        decimalPlaces = [[NSUserDefaults standardUserDefaults] integerForKey:@"decimalPlacesMenue"];
+    else
+        decimalPlaces = 2;
 }
 
 -(void) loadControllerWithEntities:(NSMutableArray *)entities
@@ -92,6 +100,27 @@
 - (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces
 {
     decimalPlaces = _decimalPlaces;
+    [[NSUserDefaults standardUserDefaults] setInteger:decimalPlaces forKey:@"decimalPlacesMenue"];
+    
+    NSString* textFieldText = tfValueToCalculate.text;
+    if([textFieldText containsString:@","])
+    {
+        // Only allow the decimal places entered in the settings menu
+        NSArray *components = [textFieldText componentsSeparatedByString:@","];
+        NSString* decimalPlacesStr = [components objectAtIndex:1];
+        while (decimalPlacesStr.length > decimalPlaces)
+        {
+            if (decimalPlacesStr.length > 0)
+            {
+                decimalPlacesStr = [decimalPlacesStr substringToIndex:[decimalPlacesStr length] - 1];
+                textFieldText = [textFieldText substringToIndex:[textFieldText length] - 1];
+            }
+        }
+        [tfValueToCalculate setText:textFieldText];
+    }
+    
+    isNotFirstStartup = true;
+    [[NSUserDefaults standardUserDefaults] setBool:isNotFirstStartup forKey:@"firstStartUpMain"];
 }
 
 -(IBAction)menuHandler:(id)sender
@@ -202,9 +231,41 @@
     [button setImage:countryImage forState:UIControlStateNormal];
 }
 
--(BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+-(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-    [textField becomeFirstResponder];
+    // For allowing backspace
+    if (!string.length)
+        return YES;
+    
+    NSString* textFieldText = textField.text;
+    if ([string containsString:@"."] || [string containsString:@","])
+    {
+        // Only allow one decimal comma to be entered
+        if([textFieldText containsString:@","] || range.location == 0)
+            return NO;
+        
+        NSMutableString *newTextFieldText = [NSMutableString stringWithString:textFieldText];
+        [newTextFieldText insertString:@"," atIndex:range.location];
+        
+        [textField setText:newTextFieldText];
+        return NO;
+    }
+    
+    if([textField.text containsString:@","])
+    {
+        // Only allow the decimal places entered in the settings menu
+        NSArray *components = [textFieldText componentsSeparatedByString:@","];
+        NSString* decimalPlacesStr = [components objectAtIndex:1];
+        if(decimalPlacesStr.length >= decimalPlaces)
+            return NO;
+    }
+        
+    // Only allows numbers to be entered
+    if (textField.keyboardType == UIKeyboardTypeNumberPad)
+    {
+        if ([string rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
+            return NO;
+    }
     return YES;
 }
 

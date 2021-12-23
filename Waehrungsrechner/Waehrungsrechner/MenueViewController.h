@@ -13,15 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol MenueViewControllerDelegate <NSObject>
 
-- (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)decimalPlaces;
+- (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces;
 
 @end
 
 @interface MenueViewController : UIViewController
 {
-    UILabel* _labelValue;
-    NSInteger _decimalPlaces;
-    bool _isNotFirstStartup;
+    UILabel* labelValue;
+    bool isNotFirstStartup;
 }
 
 @property (nonatomic) NSInteger decimalPlaces;

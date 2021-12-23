@@ -42,26 +42,26 @@
     decimalLabel.textAlignment = NSTextAlignmentCenter;
     [rootView addSubview:decimalLabel];
     
-    _isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUp"];
-    if (_isNotFirstStartup == true)
-        _decimalPlaces = [[NSUserDefaults standardUserDefaults] integerForKey:@"decimalPlaces"];
+    isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUp"];
+    if (isNotFirstStartup == true)
+        decimalPlaces = [[NSUserDefaults standardUserDefaults] integerForKey:@"decimalPlacesMenue"];
     else
-        _decimalPlaces = 2;
+        decimalPlaces = 2;
     
-    _labelValue = [[UILabel alloc] initWithFrame:CGRectMake(200, 150, 50, 30)];
-    _labelValue.textAlignment = NSTextAlignmentCenter;
-    [_labelValue setBackgroundColor:[UIColor lightGrayColor]];
-    [_labelValue setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+    labelValue = [[UILabel alloc] initWithFrame:CGRectMake(200, 150, 50, 30)];
+    labelValue.textAlignment = NSTextAlignmentCenter;
+    [labelValue setBackgroundColor:[UIColor lightGrayColor]];
+    [labelValue setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
      UIViewAutoresizingFlexibleLeftMargin];
-    _labelValue.text = [NSString stringWithFormat:@"%ld", (long)_decimalPlaces];
-    [rootView addSubview:_labelValue];
+    labelValue.text = [NSString stringWithFormat:@"%ld", (long)decimalPlaces];
+    [rootView addSubview:labelValue];
     
     UIStepper* stepper = [[UIStepper alloc] initWithFrame:CGRectMake(250, 150, 60, 30)];
     [stepper addTarget:self action:@selector(stepperChanged:) forControlEvents:UIControlEventValueChanged];
     [stepper setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
      UIViewAutoresizingFlexibleLeftMargin];
     
-    [stepper setValue:_decimalPlaces];
+    [stepper setValue:decimalPlaces];
     [stepper setMinimumValue:0];
     [stepper setMaximumValue:8];
     [rootView addSubview:stepper];
@@ -71,11 +71,11 @@
 
 -(void)zurueckHandler:(id)sender
 {
-    [[NSUserDefaults standardUserDefaults] setInteger:_decimalPlaces forKey:@"decimalPlaces"];
-    [self.delegate addItemViewController:self didFinishEnteringItem:_decimalPlaces];
+    [[NSUserDefaults standardUserDefaults] setInteger:decimalPlaces forKey:@"decimalPlacesMenue"];
+    [self.delegate addItemViewController:self didFinishEnteringItem:decimalPlaces];
     
-    _isNotFirstStartup = true;
-    [[NSUserDefaults standardUserDefaults] setBool:_isNotFirstStartup forKey:@"firstStartUp"];
+    isNotFirstStartup = true;
+    [[NSUserDefaults standardUserDefaults] setBool:isNotFirstStartup forKey:@"firstStartUp"];
     
     [self dismissViewControllerAnimated:YES completion:nil];
 }
@@ -83,8 +83,8 @@
 - (IBAction)stepperChanged:(UIStepper *)sender
 {
     int value = sender.value;
-    _labelValue.text = [NSString stringWithFormat:@"%d",value];
-    _decimalPlaces = value;
+    labelValue.text = [NSString stringWithFormat:@"%d",value];
+    decimalPlaces = value;
 }
 
 

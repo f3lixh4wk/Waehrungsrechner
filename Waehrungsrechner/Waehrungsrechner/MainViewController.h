@@ -12,7 +12,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MainViewController : UIViewController <MenueViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 {
-    double _valueToCalculate;
+    bool isNotFirstStartup;
+    double valueToCalculate;
     NSInteger decimalPlaces;
     IBOutlet UITextField *tfValueToCalculate;
     IBOutlet UILabel *lblResult;
