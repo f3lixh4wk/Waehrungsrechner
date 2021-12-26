@@ -7,7 +7,6 @@
 
 #import "MainViewController.h"
 #import "MenueViewController.h"
-#import "CurrencyEntity.h"
 
 @interface MainViewController ()
 
@@ -20,6 +19,7 @@
     [super viewDidLoad];
     // Idee für Animation: Wenn der SwitchCountryButton gedrückt wird, dann wird das Switchen animiert.
     
+    [self initEuroEntity];
     [self prepareTableViewData];
     
     tableViewLeft.delegate = self;
@@ -33,7 +33,7 @@
     tableViewRight.scrollEnabled = YES;
     
     tfValueToCalculate.delegate = self;
-    tfValueToCalculate.keyboardType = UIKeyboardTypeNumberPad;
+    tfValueToCalculate.keyboardType = UIKeyboardTypeDecimalPad;
     bottomBorderTfValueToCalculate = [self createBottomBorderForTextField:tfValueToCalculate];
     [tfValueToCalculate.layer addSublayer:bottomBorderTfValueToCalculate];
     tfValueToCalculate.textAlignment = NSTextAlignmentCenter;
@@ -43,9 +43,23 @@
     
     isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUpMain"];
     if (isNotFirstStartup == true)
-        decimalPlaces = [[NSUserDefaults standardUserDefaults] integerForKey:@"decimalPlacesMenue"];
+        decimalPlaces = [[NSUserDefaults standardUserDefaults] integerForKey:@"decimalPlacesMain"];
     else
         decimalPlaces = 2;
+    
+    [self setButtonContentWithButton:btnCountryLeft andKey:@"leftCurrency"];
+    [self setButtonContentWithButton:btnCountryRight andKey:@"rightCurrency"];
+}
+
+-(void)initEuroEntity
+{
+    euroEntity = [[CurrencyEntity alloc] init];
+    euroEntity.land = @"Euro";
+    euroEntity.kurswert = 1.0;
+    euroEntity.laenderCode = @"EU";
+    //TODO Start- und EndDatum
+    
+    [currencyEntities addObject:euroEntity];
 }
 
 -(void) loadControllerWithEntities:(NSMutableArray *)entities
@@ -97,10 +111,40 @@
     [tfValueToCalculate resignFirstResponder];
 }
 
+-(CurrencyEntity*)getCurrencyByCountryName:(NSString*)countryName
+{
+    CurrencyEntity* entity = [[CurrencyEntity alloc] init];
+    for (CurrencyEntity *currentEntity in currencyEntities)
+    {
+        if([currentEntity.land isEqualToString:countryName])
+        {
+            entity = currentEntity;
+            break;
+        }
+    }
+    return entity;
+}
+
+-(void)storeCurrency:(CurrencyEntity*)currency forKey:(NSString*)key
+{
+    NSData *encodedObject = [NSKeyedArchiver archivedDataWithRootObject:currency requiringSecureCoding:YES error:nil];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:encodedObject forKey:key];
+    [defaults synchronize];
+}
+
+-(CurrencyEntity*)loadCurrencyForKey:(NSString*)key
+{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSData *storedEncodedObject = [defaults objectForKey:key];
+    CurrencyEntity* entity = [NSKeyedUnarchiver unarchivedObjectOfClass:[CurrencyEntity class] fromData:storedEncodedObject error:nil];
+    return entity;
+}
+
 - (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces
 {
     decimalPlaces = _decimalPlaces;
-    [[NSUserDefaults standardUserDefaults] setInteger:decimalPlaces forKey:@"decimalPlacesMenue"];
+    [[NSUserDefaults standardUserDefaults] setInteger:decimalPlaces forKey:@"decimalPlacesMain"];
     
     NSString* textFieldText = tfValueToCalculate.text;
     if([textFieldText containsString:@","])
@@ -210,19 +254,50 @@
     if(tableView == tableViewLeft)
     {
         [self setButtonContentWithIndexPath:indexPath andButton:btnCountryLeft];
+        NSString* countryName = [self getCountryNameFromTitle:btnCountryLeft.currentTitle];
+        CurrencyEntity* entity = [self getCurrencyByCountryName:countryName];
+        // Store selected entity in user defaults
+        [self storeCurrency:entity forKey:@"leftCurrency"];
         tableViewLeft.hidden = YES;
     }
     else if (tableView == tableViewRight)
     {
         [self setButtonContentWithIndexPath:indexPath andButton:btnCountryRight];
+        NSString* countryName = [self getCountryNameFromTitle:btnCountryRight.currentTitle];
+        CurrencyEntity* entity = [self getCurrencyByCountryName:countryName];
+        // Store selected entity in user defaults
+        [self storeCurrency:entity forKey:@"rightCurrency"];
         tableViewRight.hidden = YES;
     }
+}
+
+-(NSString*)getCountryNameFromTitle:(NSString*)title
+{
+    NSString* countryName = [[NSString alloc] initWithString:title];
+    // land heraus filtern
+    NSArray *components = [countryName componentsSeparatedByString:@" ("];
+    NSString* countryNameObject = [components objectAtIndex:0];
+    countryName = [countryNameObject stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    return countryName;
 }
 
 -(void)setButtonContentWithIndexPath:(NSIndexPath *)indexPath andButton:(UIButton *)button
 {
     NSString* countryName = [tableViewCountryData objectAtIndex:indexPath.row];
     NSString* countryCode = [tableViewCountryCodeData objectAtIndex:indexPath.row];
+    UIImage *countryImage = [UIImage imageNamed:countryCode];
+    UIFont *labelFont = [ UIFont fontWithName: @"System" size: 16.0 ];
+    
+    [button setTitle:[NSString stringWithFormat:@"   %@ (%@)", countryName, countryCode] forState:UIControlStateNormal];
+    [button.titleLabel setFont:labelFont];
+    [button setImage:countryImage forState:UIControlStateNormal];
+}
+
+-(void)setButtonContentWithButton:(UIButton*)button andKey:(NSString*)key
+{
+    CurrencyEntity* entity = [self loadCurrencyForKey:key];
+    NSString* countryName = entity.land;
+    NSString* countryCode = entity.laenderCode;
     UIImage *countryImage = [UIImage imageNamed:countryCode];
     UIFont *labelFont = [ UIFont fontWithName: @"System" size: 16.0 ];
     
@@ -277,15 +352,5 @@
         [tfValueToCalculate resignFirstResponder];
     }
 }
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end

@@ -22,4 +22,33 @@
 
 @synthesize kursID, land, kurswert, laenderCode, startDatum, endDatum;
 
+-(void)encodeWithCoder:(NSCoder *)encoder
+{
+    [encoder encodeInteger:kursID forKey:@"kursID"];
+    [encoder encodeObject:land forKey:@"land"];
+    [encoder encodeDouble:kurswert forKey:@"kurswert"];
+    [encoder encodeObject:laenderCode forKey:@"laenderCode"];
+    [encoder encodeObject:startDatum forKey:@"startDatum"];
+    [encoder encodeObject:endDatum forKey:@"endDatum"];
+}
+
+-(id)initWithCoder:(NSCoder *)decoder
+{
+    if((self = [super init]))
+    {
+        kursID = [decoder decodeIntegerForKey:@"kursID"];
+        land = [decoder decodeObjectOfClass:[NSString class] forKey:@"land"];
+        kurswert = [decoder decodeDoubleForKey:@"kurswert"];
+        laenderCode = [decoder decodeObjectOfClass:[NSString class] forKey:@"laenderCode"];
+        startDatum = [decoder decodeObjectOfClass:[NSDate class] forKey:@"startDatum"];
+        endDatum = [decoder decodeObjectOfClass:[NSDate class] forKey:@"endDatum"];
+    }
+    return self;
+}
+
++(BOOL)supportsSecureCoding
+{
+    return YES;
+}
+
 @end

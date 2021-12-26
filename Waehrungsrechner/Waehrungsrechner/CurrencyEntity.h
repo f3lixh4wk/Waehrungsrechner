@@ -9,7 +9,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CurrencyEntity : NSObject
+@interface CurrencyEntity : NSObject<NSCoding, NSSecureCoding>
 {
     NSInteger kursID;
     NSString* land;

@@ -39,7 +39,13 @@
     NSString *day = [formatter stringFromDate:now];
     
     // Wenn man Start und Enddatum gleich wählt in der URL, wird die Gültigkeit der Kurse für den ganzen Monat geliefert.
-    NSString *urlStr = [NSString stringWithFormat:@"http://www.zoll.de/SiteGlobals/Functions/Kurse/KursExport.xml?view=xmlexportkursesearchresultZOLLWeb&kursart=1&startdatum_tag2=%@&startdatum_monat2=%@&startdatum_jahr2=%@&enddatum_tag2=%@&enddatum_monat2=%@&enddatum_jahr2=%@&sort=asc&spalte=gueltigkeit", day, month, year, day, month, year];
+    NSString *urlStr = [NSString stringWithFormat:@"http://www.zoll.de/SiteGlobals/Functions/Kurse/KursExport.xml?view=xmlexportkursesearchresultZOLLWeb&kursart=1&startdatum_tag2=%@&startdatum_monat2=%@&startdatum_jahr2=%@&enddatum_tag2=%@&enddatum_monat2=%@&enddatum_jahr2=%@&sort=asc&spalte=gueltigkeit",
+                        day,
+                        month,
+                        year,
+                        day,
+                        month,
+                        year];
     return urlStr;
 }
 

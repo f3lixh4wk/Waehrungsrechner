@@ -7,6 +7,7 @@
 
 #import <UIKit/UIKit.h>
 #import "MenueViewController.h"
+#import "CurrencyEntity.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
     
     CALayer* bottomBorderTfValueToCalculate;
     CALayer* bottomBorderLblResult;
+    
+    CurrencyEntity* euroEntity;
 }
 
 -(void) loadControllerWithEntities:(NSMutableArray*)entities;
