@@ -15,6 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString* land;
     double kurswert;
     NSString* laenderCode;
+    NSString* laenderIsoCode;
     NSDate* startDatum;
     NSDate* endDatum;
 }
@@ -23,6 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) NSString* land;
 @property (nonatomic) double kurswert;
 @property (nonatomic, strong) NSString* laenderCode;
+@property (nonatomic, strong) NSString* laenderIsoCode;
 @property (nonatomic) NSDate* startDatum;
 @property (nonatomic) NSDate* endDatum;
 

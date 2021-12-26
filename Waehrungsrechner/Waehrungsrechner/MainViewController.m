@@ -34,11 +34,11 @@
     
     tfValueToCalculate.delegate = self;
     tfValueToCalculate.keyboardType = UIKeyboardTypeDecimalPad;
-    bottomBorderTfValueToCalculate = [self createBottomBorderForTextField:tfValueToCalculate];
+    bottomBorderTfValueToCalculate = [self createBottomBorderForView:tfValueToCalculate];
     [tfValueToCalculate.layer addSublayer:bottomBorderTfValueToCalculate];
     tfValueToCalculate.textAlignment = NSTextAlignmentCenter;
     
-    bottomBorderLblResult = [self createBottomBorderForLabel:lblResult];
+    bottomBorderLblResult = [self createBottomBorderForView:lblResult];
     [lblResult.layer addSublayer:bottomBorderLblResult];
     
     isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUpMain"];
@@ -57,7 +57,14 @@
     euroEntity.land = @"Euro";
     euroEntity.kurswert = 1.0;
     euroEntity.laenderCode = @"EU";
-    //TODO Start- und EndDatum
+    euroEntity.laenderIsoCode = @"EUR";
+    
+    NSMutableArray* dateRange = [self dateRange];
+    if ([dateRange count] != 0)
+    {
+        euroEntity.startDatum = [dateRange objectAtIndex:0];
+        euroEntity.endDatum = [dateRange objectAtIndex:1];
+    }
     
     [currencyEntities addObject:euroEntity];
 }
@@ -71,9 +78,6 @@
 {
     tableViewCountryData = [[NSMutableArray alloc] init];
     tableViewCountryCodeData = [[NSMutableArray alloc] init];
-    
-    [tableViewCountryData addObject:@"Euro"];
-    [tableViewCountryCodeData addObject:@"EU"];
     
     for (CurrencyEntity *entity in currencyEntities)
     {
@@ -185,30 +189,21 @@
     {
         // will execute after rotation
         [self->bottomBorderTfValueToCalculate removeFromSuperlayer];
-        self->bottomBorderTfValueToCalculate = [self createBottomBorderForTextField:self->tfValueToCalculate];
+        self->bottomBorderTfValueToCalculate = [self createBottomBorderForView:self->tfValueToCalculate];
         [self->tfValueToCalculate.layer addSublayer:self->bottomBorderTfValueToCalculate];
         
         [self->bottomBorderLblResult removeFromSuperlayer];
-        self->bottomBorderLblResult = [self createBottomBorderForLabel:self->lblResult];
+        self->bottomBorderLblResult = [self createBottomBorderForView:self->lblResult];
         [self->lblResult.layer addSublayer:self->bottomBorderLblResult];
     }];
 }
 
--(CALayer*)createBottomBorderForLabel:(UILabel*)label
+-(CALayer*)createBottomBorderForView:(UIView*)view
 {
     CALayer* bottomBorder = [CALayer layer];
     bottomBorder.borderColor = [UIColor blackColor].CGColor;
     bottomBorder.borderWidth = 1;
-    bottomBorder.frame = CGRectMake(0, CGRectGetHeight(label.frame)-1, CGRectGetWidth(label.frame), 1);
-    return bottomBorder;
-}
-
--(CALayer*)createBottomBorderForTextField:(UITextField*)textfield
-{
-    CALayer* bottomBorder = [CALayer layer];
-    bottomBorder.borderColor = [UIColor blackColor].CGColor;
-    bottomBorder.borderWidth = 1;
-    bottomBorder.frame = CGRectMake(0, CGRectGetHeight(textfield.frame)-1, CGRectGetWidth(textfield.frame), 1);
+    bottomBorder.frame = CGRectMake(0, CGRectGetHeight(view.frame)-1, CGRectGetWidth(view.frame), 1);
     return bottomBorder;
 }
 
@@ -254,27 +249,28 @@
     if(tableView == tableViewLeft)
     {
         [self setButtonContentWithIndexPath:indexPath andButton:btnCountryLeft];
-        NSString* countryName = [self getCountryNameFromTitle:btnCountryLeft.currentTitle];
-        CurrencyEntity* entity = [self getCurrencyByCountryName:countryName];
-        // Store selected entity in user defaults
-        [self storeCurrency:entity forKey:@"leftCurrency"];
         tableViewLeft.hidden = YES;
     }
     else if (tableView == tableViewRight)
     {
         [self setButtonContentWithIndexPath:indexPath andButton:btnCountryRight];
-        NSString* countryName = [self getCountryNameFromTitle:btnCountryRight.currentTitle];
-        CurrencyEntity* entity = [self getCurrencyByCountryName:countryName];
-        // Store selected entity in user defaults
-        [self storeCurrency:entity forKey:@"rightCurrency"];
         tableViewRight.hidden = YES;
     }
+    
+    NSString* leftCountryName = [self getCountryNameFromTitle:btnCountryLeft.currentTitle];
+    NSString* rightCountryName = [self getCountryNameFromTitle:btnCountryRight.currentTitle];
+    CurrencyEntity* leftEntity = [self getCurrencyByCountryName:leftCountryName];
+    CurrencyEntity* rightEntity = [self getCurrencyByCountryName:rightCountryName];
+    
+    // Store selected entities in user defaults
+    [self storeCurrency:leftEntity forKey:@"leftCurrency"];
+    [self storeCurrency:rightEntity forKey:@"rightCurrency"];
+    [self updateComparisonForLeftCurrency:leftEntity andRightCurrency:rightEntity];
 }
 
 -(NSString*)getCountryNameFromTitle:(NSString*)title
 {
     NSString* countryName = [[NSString alloc] initWithString:title];
-    // land heraus filtern
     NSArray *components = [countryName componentsSeparatedByString:@" ("];
     NSString* countryNameObject = [components objectAtIndex:0];
     countryName = [countryNameObject stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
@@ -325,8 +321,7 @@
         [textField setText:newTextFieldText];
         return NO;
     }
-    
-    if([textField.text containsString:@","])
+    else if ([textFieldText containsString:@","])
     {
         // Only allow the decimal places entered in the settings menu
         NSArray *components = [textFieldText componentsSeparatedByString:@","];
@@ -334,13 +329,16 @@
         if(decimalPlacesStr.length >= decimalPlaces)
             return NO;
     }
-        
-    // Only allows numbers to be entered
-    if (textField.keyboardType == UIKeyboardTypeNumberPad)
+    else if (textField.keyboardType == UIKeyboardTypeNumberPad)
     {
+        // Only allows numbers to be entered
         if ([string rangeOfCharacterFromSet:[[NSCharacterSet decimalDigitCharacterSet] invertedSet]].location != NSNotFound)
             return NO;
     }
+    
+    double textFieldValue = [textFieldText doubleValue];
+    double currencyCourseResult = [self calculateCurrencyCourseResult:textFieldValue];
+    [lblResult setText:[NSString stringWithFormat:@"%f", currencyCourseResult]];
     return YES;
 }
 
@@ -351,6 +349,39 @@
     {
         [tfValueToCalculate resignFirstResponder];
     }
+}
+
+-(double)calculateCurrencyCourseResult:(double)valueToCalculate
+{
+    double result = valueToCalculate;
+    return result;
+}
+
+//TODO Nachkommastellen beachten
+-(void)updateComparisonForLeftCurrency:(CurrencyEntity*)leftCurrency andRightCurrency:(CurrencyEntity*)rightCurrency
+{
+    double leftCurrencyCourseValue = leftCurrency.kurswert;
+    double rightCurrencyCourseValue = rightCurrency.kurswert;
+    
+    double lhsValue = leftCurrencyCourseValue / leftCurrencyCourseValue;
+    double rhsValue = rightCurrencyCourseValue / leftCurrencyCourseValue;
+    
+    [lblCurrenciesComparison setText:[NSString stringWithFormat:@"%f %@ = %f %@", lhsValue, leftCurrency.laenderIsoCode, rhsValue, rightCurrency.laenderIsoCode]];
+}
+
+// Index 0: NSDate for the First day of the month
+// Index 1: NSDate for the Last day of the month
+// TODO in den einstellungen die möglichkeit einer date range einstellung bieten -> dann muss es eine updateDateRange Methode geben, die bei jeder entity die date range updated.
+-(NSMutableArray*)dateRange
+{
+    NSMutableArray* range = [[NSMutableArray alloc] init];
+    if ([currencyEntities count] != 0)
+    {
+        CurrencyEntity* entity = [currencyEntities objectAtIndex:0];
+        [range addObject:entity.startDatum];
+        [range addObject:entity.endDatum];
+    }
+    return range;
 }
 
 @end

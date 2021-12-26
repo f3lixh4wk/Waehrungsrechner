@@ -76,6 +76,8 @@
     }
     else if([elementName isEqualToString:@"iso2"])
         currency.laenderCode = [currentElement stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
+    else if ([elementName isEqualToString:@"iso3"])
+        currency.laenderIsoCode = [currentElement stringByTrimmingCharactersInSet:[NSCharacterSet newlineCharacterSet]];
     else if([elementName isEqualToString:@"startdatum"])
         currency.startDatum = [dateFormatter dateFromString:currentElement];
     else if([elementName isEqualToString:@"enddatum"])

@@ -20,7 +20,7 @@
 
 @implementation CurrencyEntity
 
-@synthesize kursID, land, kurswert, laenderCode, startDatum, endDatum;
+@synthesize kursID, land, kurswert, laenderCode, laenderIsoCode, startDatum, endDatum;
 
 -(void)encodeWithCoder:(NSCoder *)encoder
 {
@@ -28,6 +28,7 @@
     [encoder encodeObject:land forKey:@"land"];
     [encoder encodeDouble:kurswert forKey:@"kurswert"];
     [encoder encodeObject:laenderCode forKey:@"laenderCode"];
+    [encoder encodeObject:laenderIsoCode forKey:@"laenderIsoCode"];
     [encoder encodeObject:startDatum forKey:@"startDatum"];
     [encoder encodeObject:endDatum forKey:@"endDatum"];
 }
@@ -40,6 +41,7 @@
         land = [decoder decodeObjectOfClass:[NSString class] forKey:@"land"];
         kurswert = [decoder decodeDoubleForKey:@"kurswert"];
         laenderCode = [decoder decodeObjectOfClass:[NSString class] forKey:@"laenderCode"];
+        laenderIsoCode = [decoder decodeObjectOfClass:[NSString class] forKey:@"laenderIsoCode"];
         startDatum = [decoder decodeObjectOfClass:[NSDate class] forKey:@"startDatum"];
         endDatum = [decoder decodeObjectOfClass:[NSDate class] forKey:@"endDatum"];
     }

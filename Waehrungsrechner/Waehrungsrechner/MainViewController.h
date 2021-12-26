@@ -18,6 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSInteger decimalPlaces;
     IBOutlet UITextField *tfValueToCalculate;
     IBOutlet UILabel *lblResult;
+    IBOutlet UILabel *lblCurrenciesComparison;
     IBOutlet UIButton *btnCountryRight;
     IBOutlet UIButton *btnCountryLeft;
     IBOutlet UITableView *tableViewLeft;
