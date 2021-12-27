@@ -284,6 +284,28 @@
     
 }
 
+-(void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    //Bereite Animation vor
+    CATransform3D rotate;
+    rotate = CATransform3DMakeRotation((45*M_PI)/180, 0.0, 2.0, 0.0);
+    cell.alpha = 0;
+    cell.layer.transform = rotate;
+    cell.layer.anchorPoint = CGPointMake(0, 0.5);
+    
+    if(cell.layer.position.x != 0)
+    {
+        cell.layer.position = CGPointMake(0, cell.layer.position.y);
+    }
+
+    // Starte Animation
+    [UIView animateWithDuration:1.0 animations:^(void)
+    {
+        cell.layer.transform = CATransform3DIdentity;
+        cell.alpha = 1;
+    }];
+}
+
 -(NSString*)getCountryNameFromTitle:(NSString*)title
 {
     NSString* countryName = [[NSString alloc] initWithString:title];
