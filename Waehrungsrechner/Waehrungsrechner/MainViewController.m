@@ -18,6 +18,9 @@
 {
     [super viewDidLoad];
     // Idee für Animation: Wenn der SwitchCountryButton gedrückt wird, dann wird das Switchen animiert.
+    // TODO ein kleines HelperInterface schreiben, damit der Code hier übersichtlicher wird
+    // Nice to have: wenn man auf einen der beiden Button klickt, wäre es cool wenn dann ein suchfeld erscheint,
+    // in dem man nach der gewünschten Währung suchen könnte, diese wird anhand des Suchbegriffes herausgefiltert.
     
     [self initEuroEntity];
     [self prepareTableViewData];
@@ -40,6 +43,7 @@
     
     bottomBorderLblResult = [self createBottomBorderForView:lblResult];
     [lblResult.layer addSublayer:bottomBorderLblResult];
+    lblResult.textAlignment = NSTextAlignmentCenter;
     
     isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUpMain"];
     if (isNotFirstStartup == true)
@@ -47,8 +51,12 @@
     else
         decimalPlaces = 2;
     
-    [self setButtonContentWithButton:btnCountryLeft andKey:@"leftCurrency"];
-    [self setButtonContentWithButton:btnCountryRight andKey:@"rightCurrency"];
+    [self setButtonContentWithButton:btnCountryLeft andLoadForKey:@"leftCurrency"];
+    [self setButtonContentWithButton:btnCountryRight andLoadForKey:@"rightCurrency"];
+    
+    NSArray* currentCurrencies = [self leftAndRightCurrencyArray];
+    [self updateComparisonForLeftCurrency:[currentCurrencies objectAtIndex:0] andRightCurrency:[currentCurrencies objectAtIndex:1]];
+    [self updateCurrencyCourseResultFromString:tfValueToCalculate.text];
 }
 
 -(void)initEuroEntity
@@ -113,6 +121,9 @@
     [btnCountryRight setImage:countryImageLeft forState:UIControlStateNormal];
     
     [tfValueToCalculate resignFirstResponder];
+    NSArray* currentCurrencies = [self leftAndRightCurrencyArray];
+    [self updateComparisonForLeftCurrency:[currentCurrencies objectAtIndex:0] andRightCurrency:[currentCurrencies objectAtIndex:1]];
+    [self updateCurrencyCourseResultFromString:tfValueToCalculate.text];
 }
 
 -(CurrencyEntity*)getCurrencyByCountryName:(NSString*)countryName
@@ -169,6 +180,9 @@
     
     isNotFirstStartup = true;
     [[NSUserDefaults standardUserDefaults] setBool:isNotFirstStartup forKey:@"firstStartUpMain"];
+    NSArray* currentCurrencies = [self leftAndRightCurrencyArray];
+    [self updateComparisonForLeftCurrency:[currentCurrencies objectAtIndex:0] andRightCurrency:[currentCurrencies objectAtIndex:1]];
+    [self updateCurrencyCourseResultFromString:tfValueToCalculate.text];
 }
 
 -(IBAction)menuHandler:(id)sender
@@ -240,7 +254,7 @@
     
     cell.textLabel.text = [NSString stringWithFormat:@"%@ (%@)", countryName, countryCode];
     cell.textLabel.font  = labelFont;
-    cell.accessoryView = countryImage;
+    cell.accessoryView = countryImage; // Sorgt dafür, dass die Flagge auf der rechten Seite angezeigt wird
     return cell;
 }
 
@@ -266,6 +280,8 @@
     [self storeCurrency:leftEntity forKey:@"leftCurrency"];
     [self storeCurrency:rightEntity forKey:@"rightCurrency"];
     [self updateComparisonForLeftCurrency:leftEntity andRightCurrency:rightEntity];
+    [self updateCurrencyCourseResultFromString:tfValueToCalculate.text];
+    
 }
 
 -(NSString*)getCountryNameFromTitle:(NSString*)title
@@ -289,13 +305,13 @@
     [button setImage:countryImage forState:UIControlStateNormal];
 }
 
--(void)setButtonContentWithButton:(UIButton*)button andKey:(NSString*)key
+-(void)setButtonContentWithButton:(UIButton*)button andLoadForKey:(NSString*)key
 {
     CurrencyEntity* entity = [self loadCurrencyForKey:key];
     NSString* countryName = entity.land;
     NSString* countryCode = entity.laenderCode;
     UIImage *countryImage = [UIImage imageNamed:countryCode];
-    UIFont *labelFont = [ UIFont fontWithName: @"System" size: 16.0 ];
+    UIFont *labelFont = [UIFont fontWithName: @"System" size: 16.0];
     
     [button setTitle:[NSString stringWithFormat:@"   %@ (%@)", countryName, countryCode] forState:UIControlStateNormal];
     [button.titleLabel setFont:labelFont];
@@ -304,12 +320,18 @@
 
 -(BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
+    NSString* textFieldText = textField.text;
+    NSString* valueToCalculateStr = [[NSString alloc] init];
+    
     // For allowing backspace
     if (!string.length)
+    {
+        valueToCalculateStr = [textFieldText substringToIndex:[textFieldText length]-1];
+        [self updateCurrencyCourseResultFromString:valueToCalculateStr];
         return YES;
+    }
     
-    NSString* textFieldText = textField.text;
-    if ([string containsString:@"."] || [string containsString:@","])
+    else if ([string containsString:@"."] || [string containsString:@","])
     {
         // Only allow one decimal comma to be entered
         if([textFieldText containsString:@","] || range.location == 0)
@@ -336,9 +358,15 @@
             return NO;
     }
     
-    double textFieldValue = [textFieldText doubleValue];
-    double currencyCourseResult = [self calculateCurrencyCourseResult:textFieldValue];
-    [lblResult setText:[NSString stringWithFormat:@"%f", currencyCourseResult]];
+    if([textFieldText isEqualToString:@""])
+    {
+        [self updateCurrencyCourseResultFromString:string];
+    }
+    else
+    {
+        valueToCalculateStr = [NSString stringWithFormat:@"%@%@", textFieldText, string];
+        [self updateCurrencyCourseResultFromString:valueToCalculateStr];
+    }
     return YES;
 }
 
@@ -353,11 +381,18 @@
 
 -(double)calculateCurrencyCourseResult:(double)valueToCalculate
 {
-    double result = valueToCalculate;
-    return result;
+    // Währungskurs auf der rechten Seite durch Währungskurs auf der linken Seite teilen
+    // Das Ergebnis mit dem valueToCalculate multiplizieren
+    NSArray* currentCurrencies = [self leftAndRightCurrencyArray];
+    CurrencyEntity* leftEntity = [currentCurrencies objectAtIndex:0];
+    CurrencyEntity* rightEntity = [currentCurrencies objectAtIndex:1];
+    
+    double leftCurrencyCourseValue = leftEntity.kurswert;
+    double rightCurrencyCourseValue = rightEntity.kurswert;
+    
+    return (rightCurrencyCourseValue / leftCurrencyCourseValue) * valueToCalculate;
 }
 
-//TODO Nachkommastellen beachten
 -(void)updateComparisonForLeftCurrency:(CurrencyEntity*)leftCurrency andRightCurrency:(CurrencyEntity*)rightCurrency
 {
     double leftCurrencyCourseValue = leftCurrency.kurswert;
@@ -365,10 +400,14 @@
     
     double lhsValue = leftCurrencyCourseValue / leftCurrencyCourseValue;
     double rhsValue = rightCurrencyCourseValue / leftCurrencyCourseValue;
+
+    NSString *lhsValueStr = [self formatValue:lhsValue ToDecimalPlaces:decimalPlaces];
+    NSString *rhsValueStr = [self formatValue:rhsValue ToDecimalPlaces:decimalPlaces];
     
-    [lblCurrenciesComparison setText:[NSString stringWithFormat:@"%f %@ = %f %@", lhsValue, leftCurrency.laenderIsoCode, rhsValue, rightCurrency.laenderIsoCode]];
+    [lblCurrenciesComparison setText:[NSString stringWithFormat:@"%@ %@ = %@ %@", lhsValueStr, leftCurrency.laenderIsoCode, rhsValueStr, rightCurrency.laenderIsoCode]];
 }
 
+// Helper
 // Index 0: NSDate for the First day of the month
 // Index 1: NSDate for the Last day of the month
 // TODO in den einstellungen die möglichkeit einer date range einstellung bieten -> dann muss es eine updateDateRange Methode geben, die bei jeder entity die date range updated.
@@ -382,6 +421,61 @@
         [range addObject:entity.endDatum];
     }
     return range;
+}
+
+// Helper
+-(NSString*)formatValue:(double)value ToDecimalPlaces:(NSInteger)_decimalPlaces
+{
+    NSNumberFormatter *formatter = [[NSNumberFormatter alloc] init];
+    [formatter setNumberStyle:NSNumberFormatterDecimalStyle];
+    if(_decimalPlaces < 3)
+    {
+        // Der Grund hier für das if statement ist, dass setMinimumFractionDigit minimal 3 Nachkommastellen anzeigt,
+        // auch wenn in den Einstellungen z.B. maximal 2 Nachkommastellen eingestellt sind.
+        // Allerdings wird bei Aufrundung die 0 hinten weggeschnitten :(
+        [formatter setMaximumFractionDigits:decimalPlaces];
+    }
+    else
+    {
+        [formatter setMinimumFractionDigits:decimalPlaces];
+    }
+    [formatter setRoundingMode: NSNumberFormatterRoundHalfUp];
+
+    NSString *valueStr = [formatter stringFromNumber:[NSNumber numberWithFloat:value]];
+    return valueStr;
+}
+
+-(NSArray*)leftAndRightCurrencyArray
+{
+    NSString* leftCountryName = [self getCountryNameFromTitle:btnCountryLeft.currentTitle];
+    CurrencyEntity* leftEntity = [self getCurrencyByCountryName:leftCountryName];
+    NSString* rightCountryName = [self getCountryNameFromTitle:btnCountryRight.currentTitle];
+    CurrencyEntity* rightEntity = [self getCurrencyByCountryName:rightCountryName];
+    return @[leftEntity, rightEntity];
+}
+
+-(void)updateResultLabelWithValue:(double)value
+{
+    if(value == 0)
+    {
+        [lblResult setText:@""];
+        return;
+    }
+    
+    double currencyCourseResult = [self calculateCurrencyCourseResult:value];
+    NSString* currencyCourseResultStr = [self formatValue:currencyCourseResult ToDecimalPlaces:decimalPlaces];
+    [lblResult setText:[NSString stringWithFormat:@"%@", currencyCourseResultStr]];
+}
+
+-(void)updateCurrencyCourseResultFromString:(NSString*)string
+{
+    NSString* valueToCalculateStr = [[NSString alloc] init];
+    double valueToCalculate;
+    
+    valueToCalculateStr = [NSString stringWithFormat:@"%@", string];
+    valueToCalculateStr = [valueToCalculateStr stringByReplacingOccurrencesOfString:@"," withString:@"."]; // doubleValue benötigt die Punktnotation
+    valueToCalculate = [valueToCalculateStr doubleValue];
+    [self updateResultLabelWithValue:valueToCalculate];
 }
 
 @end
