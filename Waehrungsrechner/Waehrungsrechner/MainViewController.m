@@ -21,6 +21,7 @@
     // TODO ein kleines HelperInterface schreiben, damit der Code hier übersichtlicher wird
     // Nice to have: wenn man auf einen der beiden Button klickt, wäre es cool wenn dann ein suchfeld erscheint,
     // in dem man nach der gewünschten Währung suchen könnte, diese wird anhand des Suchbegriffes herausgefiltert.
+    rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     
     [self initEuroEntity];
     [self prepareTableViewData];
@@ -51,14 +52,47 @@
     else
         decimalPlaces = 2;
     
+    darkmode = [[NSUserDefaults standardUserDefaults] boolForKey:@"darkmode"];
+    [self setDarkmode];
+    
     [self setButtonContentWithButton:btnCountryLeft andLoadForKey:@"leftCurrency"];
     [self setButtonContentWithButton:btnCountryRight andLoadForKey:@"rightCurrency"];
     
     NSArray* currentCurrencies = [self leftAndRightCurrencyArray];
     [self updateComparisonForLeftCurrency:[currentCurrencies objectAtIndex:0] andRightCurrency:[currentCurrencies objectAtIndex:1]];
-    [self updateCurrencyCourseResultFromString:tfValueToCalculate.text];
+    
+    [rootView addSubview:lblTitle];
+    [rootView addSubview:tfValueToCalculate];
+    [rootView addSubview:lblResult];
+    [rootView addSubview:lblCurrenciesComparison];
+    [rootView addSubview:btnCountryRight];
+    [rootView addSubview:btnCountryLeft];
+    [rootView addSubview:btnSwitchCountries];
+    [rootView addSubview:tableViewLeft];
+    [rootView addSubview:tableViewRight];
+    [rootView addSubview:btnSettings];
+
+    self.view = rootView;
 }
 
+-(void)setDarkmode
+{
+    if (darkmode == true)
+    {
+        [rootView setBackgroundColor:[UIColor darkGrayColor]];
+        [lblCurrenciesComparison setTextColor:[UIColor whiteColor]];
+        [lblResult setTextColor:[UIColor whiteColor]];
+        [lblTitle setTextColor:[UIColor whiteColor]];
+        
+    }
+    else
+    {
+        [rootView setBackgroundColor:[UIColor whiteColor]];
+        [lblCurrenciesComparison setTextColor:[UIColor opaqueSeparatorColor]];
+        [lblResult setTextColor:[UIColor blackColor]];
+        [lblTitle setTextColor:[UIColor blackColor]];
+    }
+}
 -(void)initEuroEntity
 {
     euroEntity = [[CurrencyEntity alloc] init];
@@ -156,6 +190,13 @@
     return entity;
 }
 
+- (void)addItemViewController:(MenueViewController *)controller didFinishEnteringDarkmode:(bool)_darkmode
+{
+    darkmode = _darkmode;
+    [[NSUserDefaults standardUserDefaults] setBool:darkmode forKey:@"darkmode"];
+    [self setDarkmode];
+}
+
 - (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces
 {
     decimalPlaces = _decimalPlaces;
@@ -224,6 +265,12 @@
 - (BOOL) shouldAutorotate
 {
     return YES;
+}
+
+- (UIInterfaceOrientationMask) supportedInterfaceOrientations
+{
+    // UpsideDown wird bei IPhones nicht unterstützt
+    return UIInterfaceOrientationMaskAllButUpsideDown;
 }
 
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -330,10 +377,17 @@
 -(void)setButtonContentWithButton:(UIButton*)button andLoadForKey:(NSString*)key
 {
     CurrencyEntity* entity = [self loadCurrencyForKey:key];
+    UIFont *labelFont = [UIFont fontWithName: @"System" size: 16.0];
+    if (entity == nil)
+    {
+        [button setTitle:@"Land auswählen" forState:UIControlStateNormal];
+        [button.titleLabel setFont:labelFont];
+        return;
+    }
+        
     NSString* countryName = entity.land;
     NSString* countryCode = entity.laenderCode;
     UIImage *countryImage = [UIImage imageNamed:countryCode];
-    UIFont *labelFont = [UIFont fontWithName: @"System" size: 16.0];
     
     [button setTitle:[NSString stringWithFormat:@"   %@ (%@)", countryName, countryCode] forState:UIControlStateNormal];
     [button.titleLabel setFont:labelFont];
@@ -419,6 +473,12 @@
 {
     double leftCurrencyCourseValue = leftCurrency.kurswert;
     double rightCurrencyCourseValue = rightCurrency.kurswert;
+    
+    if(leftCurrencyCourseValue == 0)
+    {
+        [lblCurrenciesComparison setText:@""];
+        return;
+    }
     
     double lhsValue = leftCurrencyCourseValue / leftCurrencyCourseValue;
     double rhsValue = rightCurrencyCourseValue / leftCurrencyCourseValue;

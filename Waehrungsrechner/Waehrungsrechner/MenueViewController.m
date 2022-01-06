@@ -18,10 +18,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    UIView* rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
+    rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].bounds];
     [rootView setBackgroundColor:[UIColor whiteColor]];
     
-    UIButton* backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 30, 100, 50)];
+    backButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 30, 100, 50)];
     [backButton setImage:[UIImage systemImageNamed:@"arrow.backward"] forState:UIControlStateNormal];
     [backButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
     [backButton addTarget:self action:@selector(zurueckHandler:) forControlEvents:UIControlEventTouchUpInside];
@@ -29,18 +29,25 @@
      UIViewAutoresizingFlexibleLeftMargin];
     [rootView addSubview:backButton];
     
-    UILabel* settingsLabel = [[UILabel alloc] initWithFrame:CGRectMake(140, 30, 200, 50)];
+    settingsLabel = [[UILabel alloc] initWithFrame:CGRectMake(140, 30, 200, 50)];
     [settingsLabel setText:@"Einstellungen"];
     [settingsLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
      UIViewAutoresizingFlexibleLeftMargin];
     [rootView addSubview:settingsLabel];
     
-    UILabel* decimalLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 150, 200, 30)];
+    decimalLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 150, 200, 30)];
     [decimalLabel setText:@"Nachkommastellen"];
     [decimalLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
      UIViewAutoresizingFlexibleLeftMargin];
     decimalLabel.textAlignment = NSTextAlignmentCenter;
     [rootView addSubview:decimalLabel];
+    
+    backgroundLabel = [[UILabel alloc] initWithFrame:CGRectMake(-23, 220, 200, 30)];
+    [backgroundLabel setText:@"Darkmode"];
+    [backgroundLabel setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
+    backgroundLabel.textAlignment = NSTextAlignmentCenter;
+    [rootView addSubview:backgroundLabel];
     
     isNotFirstStartup = [[NSUserDefaults standardUserDefaults] boolForKey:@"firstStartUp"];
     if (isNotFirstStartup == true)
@@ -48,7 +55,10 @@
     else
         decimalPlaces = 2;
     
-    labelValue = [[UILabel alloc] initWithFrame:CGRectMake(200, 150, 50, 30)];
+    darkmode = [[NSUserDefaults standardUserDefaults] boolForKey:@"darkmode"];
+    [self setDarkMode];
+    
+    labelValue = [[UILabel alloc] initWithFrame:CGRectMake(200, 151.5, 50, 30)];
     labelValue.textAlignment = NSTextAlignmentCenter;
     [labelValue setBackgroundColor:[UIColor lightGrayColor]];
     [labelValue setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
@@ -56,7 +66,7 @@
     labelValue.text = [NSString stringWithFormat:@"%ld", (long)decimalPlaces];
     [rootView addSubview:labelValue];
     
-    UIStepper* stepper = [[UIStepper alloc] initWithFrame:CGRectMake(250, 150, 60, 30)];
+    stepper = [[UIStepper alloc] initWithFrame:CGRectMake(250, 150, 60, 30)];
     [stepper addTarget:self action:@selector(stepperChanged:) forControlEvents:UIControlEventValueChanged];
     [stepper setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
      UIViewAutoresizingFlexibleLeftMargin];
@@ -66,6 +76,15 @@
     [stepper setMaximumValue:8];
     [rootView addSubview:stepper];
     
+    modeswitch = [[UISwitch alloc] initWithFrame:CGRectMake(300, 220, 60, 30)];
+    [modeswitch addTarget:self action:@selector(switchDidChange:) forControlEvents:UIControlEventTouchUpInside];
+    [modeswitch setAutoresizingMask:UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleRightMargin |
+     UIViewAutoresizingFlexibleLeftMargin];
+    
+    [modeswitch setOn:darkmode];
+    [rootView addSubview:modeswitch];
+    
+    
     self.view = rootView;
 }
 
@@ -73,6 +92,9 @@
 {
     [[NSUserDefaults standardUserDefaults] setInteger:decimalPlaces forKey:@"decimalPlacesMenue"];
     [self.delegate addItemViewController:self didFinishEnteringItem:decimalPlaces];
+    
+    [[NSUserDefaults standardUserDefaults] setBool:darkmode forKey:@"darkmode"];
+    [self.delegate addItemViewController:self didFinishEnteringDarkmode:darkmode];
     
     isNotFirstStartup = true;
     [[NSUserDefaults standardUserDefaults] setBool:isNotFirstStartup forKey:@"firstStartUp"];
@@ -86,5 +108,32 @@
     labelValue.text = [NSString stringWithFormat:@"%d",value];
     decimalPlaces = value;
 }
+- (IBAction)switchDidChange:(UISwitch *)sender
+{
+    UISwitch *mySwitch = (UISwitch *)sender;
+    darkmode = [mySwitch isOn];
+    [self setDarkMode];
+}
 
+-(void)setDarkMode
+{
+    if (darkmode == true)
+    {
+        [rootView setBackgroundColor:[UIColor darkGrayColor]];
+        [labelValue setTextColor:[UIColor whiteColor]];
+        [settingsLabel setTextColor:[UIColor whiteColor]];
+        [decimalLabel setTextColor:[UIColor whiteColor]];
+        [backgroundLabel setTextColor:[UIColor whiteColor]];
+        [stepper setBackgroundColor:[UIColor whiteColor]];
+    }
+    else
+    {
+        [rootView setBackgroundColor:[UIColor whiteColor]];
+        [labelValue setTextColor:[UIColor blackColor]];
+        [settingsLabel setTextColor:[UIColor blackColor]];
+        [decimalLabel setTextColor:[UIColor blackColor]];
+        [backgroundLabel setTextColor:[UIColor blackColor]];
+        [stepper setBackgroundColor:[UIColor grayColor]];
+    }
+}
 @end

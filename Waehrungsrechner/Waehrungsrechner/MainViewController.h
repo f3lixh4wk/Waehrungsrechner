@@ -13,19 +13,25 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface MainViewController : UIViewController <MenueViewControllerDelegate, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate>
 {
+    UIView* rootView;
     bool isNotFirstStartup;
     double valueToCalculate;
     NSInteger decimalPlaces;
+    bool darkmode;
     IBOutlet UITextField *tfValueToCalculate;
     IBOutlet UILabel *lblResult;
     IBOutlet UILabel *lblCurrenciesComparison;
+    IBOutlet UILabel *lblTitle;
     IBOutlet UIButton *btnCountryRight;
     IBOutlet UIButton *btnCountryLeft;
+    IBOutlet UIButton *btnSwitchCountries;
+    IBOutlet UIButton *btnSettings;
     IBOutlet UITableView *tableViewLeft;
     IBOutlet UITableView *tableViewRight;
     NSMutableArray* tableViewCountryData;
     NSMutableArray* tableViewCountryCodeData;
     NSMutableArray* currencyEntities;
+
     
     CALayer* bottomBorderTfValueToCalculate;
     CALayer* bottomBorderLblResult;

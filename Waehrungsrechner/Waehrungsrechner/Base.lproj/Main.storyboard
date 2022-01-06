@@ -66,23 +66,21 @@
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jRt-DC-ISq">
-                                <rect key="frame" x="20" y="223" width="157" height="22"/>
+                                <rect key="frame" x="20" y="218" width="157" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="placeholderTextColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="   Euro (EU)" image="EU"/>
                                 <connections>
                                     <action selector="btnCountryLeftHandler:" destination="vJ2-k9-I4k" eventType="touchUpInside" id="CNO-Lf-qRh"/>
                                 </connections>
                             </button>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="cgQ-j9-tad">
-                                <rect key="frame" x="237" y="223" width="157" height="22"/>
+                                <rect key="frame" x="237" y="218" width="157" height="32"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMinX="YES" widthSizable="YES" flexibleMaxX="YES" flexibleMinY="YES" flexibleMaxY="YES"/>
                                 <color key="backgroundColor" systemColor="placeholderTextColor"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <inset key="imageEdgeInsets" minX="0.0" minY="0.0" maxX="2.2250738585072014e-308" maxY="0.0"/>
-                                <state key="normal" title="   Vereinigte Staaten (US)" image="US"/>
                                 <connections>
                                     <action selector="btnCountryRightHandler:" destination="vJ2-k9-I4k" eventType="touchUpInside" id="hMg-ON-SIM"/>
                                 </connections>
@@ -134,8 +132,11 @@
                     <connections>
                         <outlet property="btnCountryLeft" destination="jRt-DC-ISq" id="XBm-we-SQt"/>
                         <outlet property="btnCountryRight" destination="cgQ-j9-tad" id="Ytp-lV-YoR"/>
+                        <outlet property="btnSettings" destination="VY7-fS-oSH" id="h4L-J1-bLl"/>
+                        <outlet property="btnSwitchCountries" destination="i5P-kC-3at" id="Q8C-nr-TP1"/>
                         <outlet property="lblCurrenciesComparison" destination="hbr-2y-O7k" id="mBL-Nk-zYz"/>
                         <outlet property="lblResult" destination="NON-Eq-Yj9" id="ggt-Pg-FtZ"/>
+                        <outlet property="lblTitle" destination="nAE-AQ-ZOy" id="By7-5s-Pdw"/>
                         <outlet property="tableViewLeft" destination="QuL-1v-z1I" id="zOt-RY-KMH"/>
                         <outlet property="tableViewRight" destination="Fu9-ja-TxJ" id="9Cs-YY-dC0"/>
                         <outlet property="tfValueToCalculate" destination="RG6-BS-LCT" id="njv-2F-FPn"/>
@@ -147,8 +148,6 @@
         </scene>
     </scenes>
     <resources>
-        <image name="EU" width="21" height="15"/>
-        <image name="US" width="21" height="15"/>
         <image name="arrow.left.arrow.right" catalog="system" width="119" height="128"/>
         <image name="line.3.horizontal" catalog="system" width="128" height="64"/>
         <systemColor name="opaqueSeparatorColor">

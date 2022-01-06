@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol MenueViewControllerDelegate <NSObject>
 
 - (void)addItemViewController:(MenueViewController*)controller didFinishEnteringItem:(NSInteger)_decimalPlaces;
+- (void)addItemViewController:(MenueViewController*)controller didFinishEnteringDarkmode:(bool)_darkmode;
 
 @end
 
@@ -21,10 +22,19 @@ NS_ASSUME_NONNULL_BEGIN
 {
     UILabel* labelValue;
     bool isNotFirstStartup;
+    bool darkmode;
+    UILabel* decimalLabel;
+    UILabel* settingsLabel;
+    UILabel* backgroundLabel;
+    UIButton* backButton;
+    UIView* rootView;
+    UIStepper* stepper;
+    UISwitch* modeswitch;
 }
 
 @property (nonatomic) NSInteger decimalPlaces;
 @property (nonatomic, weak) id <MenueViewControllerDelegate> delegate;
+
 
 @end
 
